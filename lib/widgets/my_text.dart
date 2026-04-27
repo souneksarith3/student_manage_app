@@ -6,7 +6,6 @@ class MyText extends StatelessWidget {
   MyText({
     super.key,
     required this.text,
-    this.fontFamily,
     this.fontSize = 16,
     this.fontColor = Colors.black,
     this.isBold = false,
@@ -14,7 +13,7 @@ class MyText extends StatelessWidget {
 
   String text;
   double? fontSize;
-  String? fontFamily = GoogleFonts.specialElite.toString();
+  //String? fontFamily = GoogleFonts.robotoSlab.toString();
   Color? fontColor;
   bool isBold;
 
@@ -22,9 +21,8 @@ class MyText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: TextStyle(
+      style: GoogleFonts.robotoSlab(
         fontSize: fontSize,
-        fontFamily: fontFamily,
         color: fontColor,
         fontWeight: isBold == true ? FontWeight.bold : FontWeight.normal,
       ),

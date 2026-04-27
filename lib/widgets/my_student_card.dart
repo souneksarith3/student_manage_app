@@ -30,9 +30,9 @@ class MyStudentCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              MyText(text: "Name", fontSize: 18, isBold: true),
-              MyText(text: "Gender"),
-              MyText(text: "Department"),
+              MyText(text: studentModel == null ? "Name" : studentModel!.name.toString(), fontSize: 18, isBold: true),
+              MyText(text: studentModel == null ? "Gender" : studentModel!.gender.toString()),
+              MyText(text: studentModel == null ? "Department" : studentModel!.department.toString()),
             ],
           ),
         ],

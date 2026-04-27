@@ -15,7 +15,7 @@ class StudentService {
   }
 
   Future<List> getStudent() async {
-    return await supabase.from("student").select();
+    return await supabase.from("student").select().order("id", ascending: true);
   }
 
   Future<Supabase?> updateStudent(int id, StudentModel model) async {

@@ -1,65 +1,79 @@
-
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:student_manage_app/configs/routes/route_page.dart';
+import 'package:student_manage_app/controllers/student_controller.dart';
 import 'package:student_manage_app/widgets/my_student_card.dart';
 import 'package:student_manage_app/widgets/my_text.dart';
 
 class HomeView extends StatelessWidget {
-  const HomeView({super.key});
+  HomeView({super.key});
+
+  final StudentController stdController = Get.put(StudentController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _buildCustomScroll,
+      appBar: _buildAppbar,
+      body: _buildBody,
       floatingActionButton: _buildFloating,
     );
   }
 
-  CustomScrollView get _buildCustomScroll => CustomScrollView(
-    slivers: [
-      SliverAppBar(
-        title: MyText(
-          text: "Student Manage Screen",
-          fontSize: 24,
-          fontColor: Colors.white,
-          isBold: true,
-        ),
-        centerTitle: true,
-        bottom: PreferredSize(
-          preferredSize: Size(double.infinity, 50),
-          child: Padding(
-            padding: EdgeInsetsGeometry.only(bottom: 10, left: 10, right: 10),
-            child: SearchBar(hintText: "Search...", backgroundColor: WidgetStatePropertyAll<Color>(Colors.white)),
-          ),
-        ),
-        expandedHeight: 130,
-        backgroundColor: Colors.blue,
+  PreferredSizeWidget get _buildAppbar {
+    return AppBar(
+      backgroundColor: Colors.blue,
+      title: MyText(
+        text: "Student List View",
+        fontColor: Colors.white,
+        fontSize: 24,
+        isBold: true,
       ),
-      SliverToBoxAdapter(
-        child: Material(
-          child: Padding(
-            padding: EdgeInsetsGeometry.only(left: 18, right: 18, top: 18, bottom: 20),
-            child: _buildStudentList,
+      centerTitle: true,
+      toolbarHeight: 80,
+      bottom: PreferredSize(
+        preferredSize: Size(double.infinity, 40),
+        child: Container(
+          height: 48,
+          margin: EdgeInsets.only(bottom: 8, left: 8, right: 8),
+          child: SearchBar(
+            leading: Icon(Icons.search),
+            hintText: "Search...",
+            hintStyle: WidgetStatePropertyAll(GoogleFonts.robotoSlab()),
           ),
-        ),
-      ),
-    ],
-  );
-
-  Column get _buildStudentList {
-    return Column(
-      spacing: 10,
-      children: List.generate(
-        15,
-        (index) => GestureDetector(
-          child: MyStudentCard(),
-          onTap: () {
-            print("Press on student $index");
-          },
         ),
       ),
     );
   }
 
-  FloatingActionButton get _buildFloating =>
-      FloatingActionButton(onPressed: () {}, child: Icon(Icons.add, size: 36));
+  Widget get _buildBody {
+    return Obx(
+      () => stdController.isLoading.value == true
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: stdController.list.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: EdgeInsets.all(10),
+                  child: GestureDetector(
+                    onTap: ()=> stdController.showBottumSheet(stdController.list[index]),
+                    child: MyStudentCard(
+                      studentModel: stdController.list[index],
+                    ),
+                  ),
+                );
+              },
+            ),
+    );
+  }
+
+  Widget get _buildFloating {
+    return FloatingActionButton(
+      onPressed: () {
+        Get.toNamed(RoutePage.studentAdd);
+      },
+      backgroundColor: Colors.blue,
+      child: Icon(Icons.add, color: Colors.white, size: 36),
+    );
+  }
 }
