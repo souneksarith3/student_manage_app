@@ -154,7 +154,9 @@ class StudentController extends GetxController {
   void showBottumSheet(StudentModel student) {
     Get.bottomSheet(
       BottomSheet(
-        onClosing: () {},
+        onClosing: () {
+          isLoading.value == true ? dispose() : null;
+        },
         builder: (context) => Container(
           height: 220,
           width: double.infinity,
@@ -165,40 +167,66 @@ class StudentController extends GetxController {
               topRight: Radius.circular(14),
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            spacing: 6,
-            children: [
-              SizedBox(height: 20,),
-              MyText(text: "What will you do on '${student.name}'?", fontSize: 20, isBold: true,),
-              SizedBox(height: 10,),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: TextButton(
-                  onPressed: () {
-                    studentUpdate = student;
-                    ctlId.value.text = studentUpdate.id.toString();
-                    ctlName.value.text = studentUpdate.name.toString();
-                    ctlDepartment.value.text = studentUpdate.department.toString();
-                    ctlGender.value = studentUpdate.gender.toString();
-                    Get.toNamed(RoutePage.studentUpdate);
-                  },
-                  child: MyText(text: "Update", fontColor: Colors.blue, fontSize: 18,),
+          child: isLoading.value == true
+              ? Center(child: CircularProgressIndicator())
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  spacing: 6,
+                  children: [
+                    SizedBox(height: 20),
+                    MyText(
+                      text:
+                          "What will you do on '${student.id}': '${student.name}'?",
+                      fontSize: 20,
+                      isBold: true,
+                    ),
+                    SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: TextButton(
+                        onPressed: () {
+                          studentUpdate = student;
+                          ctlId.value.text = studentUpdate.id.toString();
+                          ctlName.value.text = studentUpdate.name.toString();
+                          ctlDepartment.value.text = studentUpdate.department
+                              .toString();
+                          ctlGender.value = studentUpdate.gender.toString();
+                          Get.toNamed(RoutePage.studentUpdate);
+                        },
+                        child: MyText(
+                          text: "Update",
+                          fontColor: Colors.blue,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: TextButton(
+                        onPressed: () async {
+                          final result = await deleteStudent(student.id!);
+                          print(student.id);
+                          if (result == null) {
+                            // ignore: use_build_context_synchronously
+                            Navigator.of(context).pop();
+                            await getStudent();
+                          } else {
+                            Get.snackbar("Status", "Error");
+                          }
+                        },
+                        child: isLoading.value == true
+                            ? CircularProgressIndicator()
+                            : MyText(
+                                text: "Delete",
+                                fontColor: Colors.red,
+                                fontSize: 18,
+                              ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: TextButton(
-                  onPressed: () {
-                    
-                  },
-                  child: MyText(text: "Delete", fontColor: Colors.red, fontSize: 18,),
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );
